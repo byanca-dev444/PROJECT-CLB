@@ -1,0 +1,89 @@
+swift
+import Foundation
+
+// Função para ler o conteúdo de um arquivo
+func readFile(atPath path: String) -> String? {
+    do {
+        return try String(contentsOfFile: path, encoding: .utf8)
+    } catch {
+        print("Erro ao ler o arquivo: \(error)")
+        return nil
+    }
+}
+
+// Função para contar o número de palavras em um texto
+func countWords(in text: String) -> Int {
+    let words = text.split { !$0.isLetter }
+    return words.count
+}
+
+// Função para buscar uma palavra no texto
+func findWord(_ word: String, in text: String) -> Int {
+    let words = text.components(separatedBy: .whitespacesAndNewlines)
+    return words.filter { $0.lowercased() == word.lowercased() }.count
+}
+
+// Função para substituir uma palavra por outra no texto
+func replaceWord(_ word: String, with newWord: String, in text: String) -> String {
+    return text.replacingOccurrences(of: word, with: newWord)
+}
+
+// Função principal que processa os argumentos do terminal
+func processArguments() {
+    let arguments = CommandLine.arguments
+
+    guard arguments.count >= 3 else {
+        print("Uso: swift-cli <comando> <caminho do arquivo> [<palavra> <nova palavra>]")
+        return
+    }
+
+    let command = arguments[1]
+    let filePath = arguments[2]
+
+    guard let fileContent = readFile(atPath: filePath) else {
+        return
+    }
+
+    switch command {
+    case "count":
+        let wordCount = countWords(in: fileContent)
+        print("Número de palavras: \(wordCount)")
+
+    case "find":
+        guard arguments.count >= 4 else {
+            print("Uso: swift-cli find <caminho do arquivo> <palavra>")
+            return
+        }
+        let word = arguments[3]
+        let wordOccurrences = findWord(word, in: fileContent)
+        print("A palavra '\(word)' ocorre \(wordOccurrences) vezes.")
+
+    case "replace":
+        guard arguments.count >= 5 else {
+            print("Uso: swift-cli replace <caminho do arquivo> <palavra> <nova palavra>")
+            return
+        }
+        let word = arguments[3]
+        let newWord = arguments[4]
+        let newContent = replaceWord(word, with: newWord, in: fileContent)
+        print("Novo conteúdo do arquivo:\n\(newContent)")
+
+    default:
+        print("Comando não reconhecido.")
+    }
+}
+
+processArguments()
+```
+
+### 4. Descrição das funcionalidades
+
+- **Contagem de palavras**: Usa o comando `count` para contar o número total de palavras no arquivo de texto.
+  ```bash
+  swift run swift-cli count <caminho_do_arquivo>
+  ```
+  
+- **Buscar palavra**: Usa o comando `find` para contar quantas vezes uma palavra específica aparece no texto.
+  ```bash
+  swift run swift-cli find <caminho_do_arquivo> <palavra>
+  ```
